@@ -61,7 +61,7 @@ This would create a ToC similar to the following:
 
 ## Installation
 
-Suggest to manage your vim plugins via [Vundle][4] so you can install it simply three steps:
+I suggest managing your vim plugins via [Vundle](https://github.com/VundleVim/Vundle.vim) or [Vim Plug](https://github.com/junegunn/vim-plug) so you can install in three simple steps:
 
 1. add the following line to your vimrc file
 
@@ -69,11 +69,15 @@ Suggest to manage your vim plugins via [Vundle][4] so you can install it simply 
     Plugin 'l00sed/vim-css-toc'
     ```
 
+    - or -
+
+   ```
+    Plug 'l00sed/vim-css-toc'
+   ```
+
 2. `:so $MYVIMRC`
 
 3. `:PluginInstall`
-
-Installation with [vim-plug][8] is likeness.
 
 ## Usage
 
@@ -139,8 +143,9 @@ The `:UpdateToc` command, which is designed to update toc manually, can only wor
    ```
    /* TOC =================================== *
       ...TOC
-    * TOD =================================== */
+    * TOC =================================== */
    ```
+
 5. `g:vct_cycle_list_item_markers`
 
    default: 0
