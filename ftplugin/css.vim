@@ -77,9 +77,7 @@ function! s:GetHeadingLines()
 endfunction
 
 function! s:GetHeadingName(headingLine)
-    let l:headingName = substitute(a:headingLine, '-', '', 'g')
-    let l:headingName = substitute(a:headingLine, '=', '', 'g')
-    let l:headingName = substitute(l:headingName, '*', '', 'g')
+    let l:headingName = substitute(a:headingLine, '*', '', 'g')
     let l:headingName = substitute(l:headingName, '/', '', 'g')
     let l:headingName = substitute(l:headingName, '\n', '', 'g')
     let l:headingName = substitute(l:headingName, '\r', '', 'g')
@@ -161,7 +159,7 @@ function! s:GenTocInner(isModeline)
             let l:heading = l:heading . l:listItemChar
             let l:heading = l:heading . " " . l:headingName
 
-            silent put =l:heading
+            silent put ='   ' . l:heading
         endif
         let l:i += 1
     endfor
