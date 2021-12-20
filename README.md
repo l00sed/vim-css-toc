@@ -69,7 +69,7 @@ I suggest managing your vim plugins via [Vundle](https://github.com/VundleVim/Vu
     Plugin 'l00sed/vim-css-toc'
     ```
 
-    - or -
+    or
 
    ```
     Plug 'l00sed/vim-css-toc'
