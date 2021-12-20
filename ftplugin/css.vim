@@ -65,7 +65,7 @@ function! s:GetHeadingLines()
     let l:headingLineRegex = <SID>HeadingLineRegex()
 
     while search(l:headingLineRegex, l:flags) != 0
-        let l:line = getline(".")
+        let l:line = getline(".") 
         let l:lineNum = line(".")
         let l:flags = "W"
         call add(l:headingLines, l:line)
@@ -78,10 +78,12 @@ endfunction
 
 function! s:GetHeadingName(headingLine)
     let l:headingName = substitute(a:headingLine, '-', '', 'g')
+    let l:headingName = substitute(a:headingLine, '=', '', 'g')
     let l:headingName = substitute(l:headingName, '*', '', 'g')
     let l:headingName = substitute(l:headingName, '/', '', 'g')
     let l:headingName = substitute(l:headingName, '\n', '', 'g')
     let l:headingName = substitute(l:headingName, '\r', '', 'g')
+    let l:headingName = substitute(l:headingName, '\s\+$', '', 'g')
     let l:headingName = substitute(l:headingName, '\#', '', 'g')
 
     return l:headingName
