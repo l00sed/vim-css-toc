@@ -6,100 +6,66 @@ endif
 
 let g:loaded_CSSTocPlugin = 1
 
-if !exists("g:vmt_auto_update_on_save")
-    let g:vmt_auto_update_on_save = 1
+if !exists("g:vct_auto_update_on_save")
+    let g:vct_auto_update_on_save = 1
 endif
 
-if !exists("g:vmt_dont_insert_fence")
-    let g:vmt_dont_insert_fence = 0
+if !exists("g:vct_dont_insert_fence")
+    let g:vct_dont_insert_fence = 0
 endif
 
-if !exists("g:vmt_fence_text")
-    let g:vmt_fence_text = 'vim-css-toc'
+if !exists("g:vct_fence_text")
+    let g:vct_fence_text = 'BEGIN - Table of Contents'
 endif
 
-if !exists("g:vmt_fence_closing_text")
-    let g:vmt_fence_closing_text = g:vmt_fence_text
+if !exists("g:vct_fence_closing_text")
+    let g:vct_fence_closing_text = 'END   - Table of Contents'
 endif
 
-if !exists("g:vmt_fence_hidden_css_style")
-    let g:vmt_fence_hidden_css_style = ''
+if !exists("g:vct_fence_hidden_css_style")
+    let g:vct_fence_hidden_css_style = ''
 endif
 
-if !exists("g:vmt_list_item_char")
-    let g:vmt_list_item_char = '*'
+if !exists("g:vct_list_item_char")
+    let g:vct_list_item_char = '*'
 endif
 
-if !exists("g:vmt_list_indent_text")
-    let g:vmt_list_indent_text = ''
+if !exists("g:vct_list_indent_text")
+    let g:vct_list_indent_text = ''
 endif
 
-if !exists("g:vmt_cycle_list_item_markers")
-    let g:vmt_cycle_list_item_markers = 0
+if !exists("g:vct_cycle_list_item_markers")
+    let g:vct_cycle_list_item_markers = 1
 endif
 
-if !exists("g:vmt_include_headings_before")
-    let g:vmt_include_headings_before = 0
+if !exists("g:vct_include_headings_before")
+    let g:vct_include_headings_before = 0
 endif
 
-if !exists("g:vmt_link")
-    let g:vmt_link = 1
+if !exists("g:vct_link")
+    let g:vct_link = 1
 endif
 
-if !exists("g:vmt_min_level")
-    let g:vmt_min_level = 1
+if !exists("g:vct_min_level")
+    let g:vct_min_level = 0
 endif
 
-if !exists("g:vmt_max_level")
-    let g:vmt_max_level = 6
+if !exists("g:vct_max_level")
+    let g:vct_max_level = 20
 endif
 
 let g:GFMHeadingIds = {}
 
-#let s:supportCSSStyles = ['GFM', 'Redcarpet', 'GitLab', 'Marked']
-
-#let s:GFM_STYLE_INDEX = 0
-#let s:REDCARPET_STYLE_INDEX = 1
-#let s:GITLAB_STYLE_INDEX = 2
-#let s:MARKED_STYLE_INDEX = 3
-
 function! s:HeadingLineRegex()
-    return '\/\*[^*]*\*+([^/*][^*]*\*+)*\/'
-endfunction
-
-function! s:GetSections(beginRegex, endRegex)
-    let l:winview = winsaveview()
-    let l:sections = {}
-
-    keepjumps normal! gg0
-    let l:flags = "Wc"
-    let l:beginLine = 0
-    let l:regex = a:beginRegex
-    while search(l:regex, l:flags)
-        let l:lineNum = line(".")
-        if l:beginLine == 0
-            let l:beginLine = l:lineNum
-            let l:regex = a:endRegex
-        else
-            let l:sections[l:beginLine] = l:lineNum
-            let l:beginLine = 0
-            let l:regex = a:beginRegex
-        endif
-        let l:flags = "W"
-    endwhile
-
-    call winrestview(l:winview)
-
-    return l:sections
+    return '\/\*\ #\([^*]\|[\r\n]\|\(\*\+\([^*/]\|[\r\n]\)\)\)*\*\+'
 endfunction
 
 function! s:GetHeadingLines()
     let l:winview = winsaveview()
     let l:headingLines = []
-    let l:codeSections = <SID>GetCodeSections()
 
     let l:flags = "W"
-    if g:vmt_include_headings_before == 1
+    if g:vct_include_headings_before == 1
         keepjumps normal! gg0
         let l:flags = "Wc"
     endif
@@ -110,6 +76,7 @@ function! s:GetHeadingLines()
         let l:line = getline(".")
         let l:lineNum = line(".")
         let l:flags = "W"
+        call add(l:headingLines, l:line)
     endwhile
 
     call winrestview(l:winview)
@@ -118,23 +85,53 @@ function! s:GetHeadingLines()
 endfunction
 
 function! s:GetHeadingName(headingLine)
-    let l:headingName = substitute(a:headingLine, '^#*\s*', "", "")
-    let l:headingName = substitute(l:headingName, '\s*#*$', "", "")
-
-    let l:headingName = substitute(l:headingName, '\[\([^\[\]]*\)\]([^()]*)', '\1', "g")
-    let l:headingName = substitute(l:headingName, '\[\([^\[\]]*\)\]\[[^\[\]]*\]', '\1', "g")
+    let l:headingName = substitute(a:headingLine, '-', '', 'g')
+    let l:headingName = substitute(l:headingName, '*', '', 'g')
+    let l:headingName = substitute(l:headingName, '/', '', 'g')
+    let l:headingName = substitute(l:headingName, '\n', '', 'g')
+    let l:headingName = substitute(l:headingName, '\r', '', 'g')
 
     return l:headingName
 endfunction
 
-function! s:GenToc(cssStyle)
-    call <SID>GenTocInner(a:cssStyle, 0)
+function! s:GenToc()
+    call <SID>GenTocInner(0)
 endfunction
 
-function! s:GenTocInner(cssStyle, isModeline)
+function! s:GetHeadingLevel(headingLine)
+    let l:count=0
+    let l:count_h1=match(a:headingLine, '* \#')
+    let l:count_h2=match(a:headingLine, '* \#\#')
+    let l:count_h3=match(a:headingLine, '* \#\#\#')
+    let l:count_h4=match(a:headingLine, '* \#\#\#\#')
+    let l:count_h5=match(a:headingLine, '* \#\#\#\#\#')
+    let l:count_h6=match(a:headingLine, '* \#\#\#\#\#\#')
+    if l:count_h1 != -1
+        let l:count+=l:count_h1
+    endif
+    if l:count_h2 != -1
+        let l:count+=l:count_h2
+    endif
+    if l:count_h3 != -1
+        let l:count+=l:count_h3
+    endif
+    if l:count_h4 != -1
+        let l:count+=l:count_h4
+    endif
+    if l:count_h5 != -1
+        let l:count+=l:count_h5
+    endif
+    if l:count_h6 != -1
+        let l:count+=l:count_h6
+    endif
+
+    return l:count
+endfunction
+
+function! s:GenTocInner(isModeline)
     let l:headingLines = <SID>GetHeadingLines()
     let l:levels = []
-    let l:listItemChars = [g:vmt_list_item_char]
+    let l:listItemChars = [g:vct_list_item_char]
 
     let g:GFMHeadingIds = {}
 
@@ -142,31 +139,33 @@ function! s:GenTocInner(cssStyle, isModeline)
         call add(l:levels, <SID>GetHeadingLevel(headingLine))
     endfor
 
-    let l:minLevel = max([min(l:levels),g:vmt_min_level])
+    let l:minLevel = max([min(l:levels),g:vct_min_level])
 
-    if g:vmt_dont_insert_fence == 0
-        silent put =<SID>GetBeginFence(a:cssStyle, a:isModeline)
+    if g:vct_dont_insert_fence == 0
+        silent put =<SID>GetBeginFence(a:isModeline)
     endif
 
-    if g:vmt_cycle_list_item_markers == 1
+    if g:vct_cycle_list_item_markers == 1
         let l:listItemChars = ['*', '-', '+']
     endif
 
     let l:i = 0
     " a black line before toc
     if !empty(l:headingLines)
-        silent put =''
+       silent put =''
     endif
 
     for headingLine in l:headingLines
         let l:headingName = <SID>GetHeadingName(headingLine)
         " only add line if less than max level and greater than min level
-        if l:levels[i] <= g:vmt_max_level && l:levels[i] >= g:vmt_min_level
+        if l:levels[i] <= g:vct_max_level && l:levels[i] >= g:vct_min_level
             let l:headingIndents = l:levels[i] - l:minLevel
             let l:listItemChar = l:listItemChars[(l:levels[i] + 1) % len(l:listItemChars)]
+
             let l:heading = repeat(s:GetIndentText(), l:headingIndents)
             let l:heading = l:heading . l:listItemChar
             let l:heading = l:heading . " " . l:headingName
+
             silent put =l:heading
         endif
         let l:i += 1
@@ -175,14 +174,15 @@ function! s:GenTocInner(cssStyle, isModeline)
     " a blank line after toc to avoid effect typo of content below
     silent put =''
 
-    if g:vmt_dont_insert_fence == 0
+    if g:vct_dont_insert_fence == 0
         silent put =<SID>GetEndFence()
     endif
+
 endfunction
 
 function! s:GetIndentText()
-    if !empty(g:vmt_list_indent_text)
-        return g:vmt_list_indent_text
+    if !empty(g:vct_list_indent_text)
+        return g:vct_list_indent_text
     endif
     if &expandtab
         return repeat(" ", &shiftwidth)
@@ -191,28 +191,28 @@ function! s:GetIndentText()
     endif
 endfunction
 
-function! s:GetBeginFence(cssStyle, isModeline)
+function! s:GetBeginFence(isModeline)
     if a:isModeline != 0
-        return "/* " . g:vmt_fence_text . " --------------------------------------"
+        return "/* " . g:vct_fence_text . " ------------------------------------ *"
     else
-        return "/* ". g:vmt_fence_text . " " . a:cssStyle . " --------------------"
+        return "/* ". g:vct_fence_text . " ------------------------------------- *"
     endif
 endfunction
 
 function! s:GetEndFence()
-    return g:vmt_fence_closing_text . " --------------------------------------- */"
+    return ' * ' . g:vct_fence_closing_text . " ------------------------------------ */"
 endfunction
 
 function! s:GetBeginFencePattern(isModeline)
     if a:isModeline != 0
-        return "/* " . g:vmt_fence_text . " --------------------------------------"
+        return "/* " . g:vct_fence_text . " ------------------------------------ *"
     else
-        return "/* " . g:vmt_fence_text . " \\([[:alpha:]]\\+\\)\\? \\?-----------"
+        return "/* " . g:vct_fence_text . " \\([[:alpha:]]\\+\\)\\? \\?--------- *"
     endif
 endfunction
 
 function! s:GetEndFencePattern()
-    return g:vmt_fence_closing_text . " --------------------------------------- */"
+    return g:vct_fence_closing_text
 endfunction
 
 function! s:GetCSSStyleInModeline()
@@ -230,37 +230,31 @@ function! s:UpdateToc()
 
     let l:totalLineNum = line("$")
 
-    let [l:cssStyle, l:beginLineNumber, l:endLineNumber, l:isModeline] = <SID>DeleteExistingToc()
+    let [l:beginLineNumber, l:endLineNumber, l:isModeline] = <SID>DeleteExistingToc()
 
-    if l:cssStyle ==# ""
-        echom "Cannot find existing toc"
-    elseif l:cssStyle ==# "Unknown"
-        echom "Find unsupported style toc"
-    else
-        let l:isFirstLine = (l:beginLineNumber == 1)
-        if l:beginLineNumber > 1
-            let l:beginLineNumber -= 1
-        endif
+    let l:isFirstLine = (l:beginLineNumber == 1)
+    if l:beginLineNumber > 1
+        let l:beginLineNumber -= 1
+    endif
 
-        if l:isFirstLine != 0
-            call cursor(l:beginLineNumber, 1)
-            put! =''
-        endif
-
+    if l:isFirstLine != 0
         call cursor(l:beginLineNumber, 1)
-        call <SID>GenTocInner(l:cssStyle, l:isModeline)
+        put! =''
+    endif
 
-        if l:isFirstLine != 0
-            call cursor(l:beginLineNumber, 1)
-            delete _
-        endif
+    call cursor(l:beginLineNumber, 1)
+    call <SID>GenTocInner(1)
 
-        " fix line number to avoid shake
-        if l:winview['lnum'] > l:endLineNumber
-            let l:diff = line("$") - l:totalLineNum
-            let l:winview['lnum'] += l:diff
-            let l:winview['topline'] += l:diff
-        endif
+    if l:isFirstLine != 0
+        call cursor(l:beginLineNumber, 1)
+        delete _
+    endif
+
+    " fix line number to avoid shake
+    if l:winview['lnum'] > l:endLineNumber
+        let l:diff = line("$") - l:totalLineNum
+        let l:winview['lnum'] += l:diff
+        let l:winview['topline'] += l:diff
     endif
 
     call winrestview(l:winview)
@@ -271,13 +265,7 @@ function! s:DeleteExistingToc()
 
     keepjumps normal! gg0
 
-    let l:cssStyle = <SID>GetCSSStyleInModeline()
-
     let l:isModeline = 0
-
-    if index(s:supportCSSStyles, l:cssStyle) != -1
-        let l:isModeline = 1
-    endif
 
     let l:tocBeginPattern = <SID>GetBeginFencePattern(l:isModeline)
     let l:tocEndPattern = <SID>GetEndFencePattern()
@@ -288,49 +276,33 @@ function! s:DeleteExistingToc()
     if search(l:tocBeginPattern, "Wc") != 0
         let l:beginLine = getline(".")
         let l:beginLineNumber = line(".")
+        echo l:beginLineNumber
 
-        if search(l:tocEndPattern, "W") != 0
-            if l:isModeline == 0
-                let l:cssStyle = matchlist(l:beginLine, l:tocBeginPattern)[1]
-            endif
-
-            let l:doDelete = 0
-            if index(s:supportCSSStyles, l:cssStyle) == -1
-                if l:cssStyle ==# "" && index(s:supportCSSStyles, g:vmt_fence_hidden_css_style) != -1
-                    let l:cssStyle = g:vmt_fence_hidden_css_style
-                    let l:isModeline = 1
-                    let l:doDelete = 1
-                else
-                    let l:cssStyle = "Unknown"
-                endif
-            else
-                let l:doDelete = 1
-            endif
+        if search(l:tocEndPattern, "Wc") != 0
+            let l:doDelete = 1
 
             if l:doDelete == 1
                 let l:endLineNumber = line(".")
                 silent execute l:beginLineNumber. "," . l:endLineNumber. "delete_"
             end
         else
-            let l:cssStyle = ""
             echom "Cannot find toc end fence"
         endif
     else
-        let l:cssStyle = ""
         echom "Cannot find toc begin fence"
     endif
 
     call winrestview(l:winview)
 
-    return [l:cssStyle, l:beginLineNumber, l:endLineNumber, l:isModeline]
+    return [l:beginLineNumber, l:endLineNumber, l:isModeline]
 endfunction
 
 command! GenToc :call <SID>GenToc()
-command! GenTocModeline :call <SID>GenTocInner(<SID>GetCSSStyleInModeline(), 1)
+command! GenTocModeline :call <SID>GenTocInner(1)
 command! UpdateToc :call <SID>UpdateToc()
 command! RemoveToc :call <SID>DeleteExistingToc()
 
-if g:vmt_auto_update_on_save == 1
+if g:vct_auto_update_on_save == 1
     autocmd BufWritePre *.{css} if !&diff | exe ':silent! UpdateToc' | endif
 endif
 
