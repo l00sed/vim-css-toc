@@ -22,10 +22,6 @@ if !exists("g:vct_fence_closing_text")
     let g:vct_fence_closing_text = 'END   - Table of Contents'
 endif
 
-if !exists("g:vct_fence_hidden_css_style")
-    let g:vct_fence_hidden_css_style = ''
-endif
-
 if !exists("g:vct_list_item_char")
     let g:vct_list_item_char = '*'
 endif
@@ -40,10 +36,6 @@ endif
 
 if !exists("g:vct_include_headings_before")
     let g:vct_include_headings_before = 0
-endif
-
-if !exists("g:vct_link")
-    let g:vct_link = 1
 endif
 
 if !exists("g:vct_min_level")
@@ -90,6 +82,7 @@ function! s:GetHeadingName(headingLine)
     let l:headingName = substitute(l:headingName, '/', '', 'g')
     let l:headingName = substitute(l:headingName, '\n', '', 'g')
     let l:headingName = substitute(l:headingName, '\r', '', 'g')
+    let l:headingName = substitute(l:headingName, '\#', '', 'g')
 
     return l:headingName
 endfunction
@@ -193,21 +186,21 @@ endfunction
 
 function! s:GetBeginFence(isModeline)
     if a:isModeline != 0
-        return "/* " . g:vct_fence_text . " ------------------------------------ *"
+        return "/* " . g:vct_fence_text . " ==================================== *"
     else
-        return "/* ". g:vct_fence_text . " ------------------------------------- *"
+        return "/* ". g:vct_fence_text . " ===================================== *"
     endif
 endfunction
 
 function! s:GetEndFence()
-    return ' * ' . g:vct_fence_closing_text . " ------------------------------------ */"
+    return ' * ' . g:vct_fence_closing_text . " ==================================== */"
 endfunction
 
 function! s:GetBeginFencePattern(isModeline)
     if a:isModeline != 0
-        return "/* " . g:vct_fence_text . " ------------------------------------ *"
+        return "/* " . g:vct_fence_text . " ==================================== *"
     else
-        return "/* " . g:vct_fence_text . " \\([[:alpha:]]\\+\\)\\? \\?--------- *"
+        return "/* " . g:vct_fence_text . " \\([[:alpha:]]\\+\\)\\? \\?========= *"
     endif
 endfunction
 
