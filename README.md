@@ -1,5 +1,7 @@
 # vim-css-toc
 
+![test](https://user-images.githubusercontent.com/23065167/146843433-bc10fe50-2b31-4d5f-b1ae-eec551a12303.gif)
+
 A vim 7.4+ plugin to generate table of contents for CSS files.
 
 This is a straight rip-off of the code used for ['mzlogin/vim-markdown-toc']('https://github.com/mzlogin/vim-markdown-toc'), except that it doesn't not provide links within the document and it's for `.css` files instead of markdown.*
@@ -56,7 +58,7 @@ This would create a ToC similar to the following:
 
 ## TODO
 
-- [ ] Screenshots
+- [X] Screenshots
 - [ ] Tests
 
 ## Installation
@@ -189,10 +191,6 @@ The `:UpdateToc` command, which is designed to update toc manually, can only wor
     default: `0`
 
     Include headings before the position you are inserting Table of Contents.
-
-## Screenshots
-
-- [ ] Coming soon...
 
 ## References
 
