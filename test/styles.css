@@ -1,0 +1,46 @@
+/* BEGIN - Table of Contents ==================================== *
+
+   +   Example H1 ---------------
+     *   Example H2 -------------
+     *   Another Example H2 -----
+       -   Example H3 -----------
+   +   Another Example H1 -------
+     *   Another H2 -------------
+       -   Another H3 -----------
+         +   Example H4 ---------
+           *   Example H5 -------
+             -   Example H6 -----
+
+ * END   - Table of Contents ==================================== */
+
+/* # Example H1 --------------- */
+.h1 {
+  color: blue;
+}
+/* ## Example H2 ------------- */
+.h2 {
+  color: pink;
+}
+/* ## Another Example H2 ----- */
+.h2.duh {
+  background-color: #000;
+}
+/* ### Example H3 ----------- */
+.h3 {
+  color: yellow;
+}
+/* # Another Example H1 ------- */
+/* ## Another H2 ------------- */
+/* ### Another H3 ----------- */
+/* #### Example H4 --------- */
+.h5 {
+  color: orange;
+}
+/* ##### Example H5 ------- */
+.h8 {
+  color: purple;
+}
+/* ###### Example H6 ----- */
+#random {
+  color: green;
+}
