@@ -50,7 +50,7 @@ This would create a ToC similar to the following:
 
 ## Features
 
-* Generate table of contents for CSS files.
+* Generate table of contents for CSS,SCSS files.
 
 * Update existing table of contents.
 
@@ -106,7 +106,7 @@ The `:UpdateToc` command, which is designed to update toc manually, can only wor
 
 1. `g:vct_auto_update_on_save`
 
-   default: 1
+   default: `1`
 
    This plugin will update existing table of contents on save automatic.
 
@@ -118,7 +118,7 @@ The `:UpdateToc` command, which is designed to update toc manually, can only wor
 
 2. `g:vct_dont_insert_fence`
 
-   default: 0
+   default: `0`
 
    By default, the `:GenToc` commands will add `/* BEGIN - Table of Contents` fence to the table of contents, it is designed for feature of auto update table of contents on save and `:UpdateToc` command, it won't effect what your CSS file looks like after parse.
 
@@ -150,7 +150,7 @@ The `:UpdateToc` command, which is designed to update toc manually, can only wor
 
 5. `g:vct_cycle_list_item_markers`
 
-   default: 0
+   default: `1`
 
    By default, `*` is used to denote every level of a list:
 
@@ -180,17 +180,27 @@ The `:UpdateToc` command, which is designed to update toc manually, can only wor
 
    Might appeal to those who care about readability of the source.
 
-7. `g:vct_list_item_char`
+6. `g:vct_list_item_char`
 
     default: `*`
 
     The list item marker, it can be `*`, `-` or `+`.
 
-8. `g:vct_include_headings_before`
+7. `g:vct_include_headings_before`
 
     default: `0`
 
     Include headings before the position you are inserting Table of Contents.
+
+8. `g:vct_clean_list`
+
+    default: `['*', '/', '\n', '\r', '\s\+$', '\#']`
+
+    These are the regex characters removed from the comment as it's sourced into the ToC.
+    The comment start (/*) and end (*/) characters are removed.
+    It also removes the hashtags (#) used to define ToC indentation.
+    Lastly it removes newlines (\n), carriage returns (\r), and trailing whitespace (\s\+$).
+    Can be added to or adjusted depending preference
 
 ## References
 
