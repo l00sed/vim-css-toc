@@ -1,6 +1,6 @@
 # vim-css-toc
 
-![file](https://user-images.githubusercontent.com/23065167/146844336-5d0ec754-c7ba-4c54-b152-c40dcb0aa1c3.gif)
+![file](https://user-images.githubusercontent.com/23065167/147138101-f6413b46-e067-4b4a-b3c0-db8f193da483.gif)
 
 A vim 7.4+ plugin to generate table of contents for CSS files.
 
