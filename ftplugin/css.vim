@@ -73,7 +73,7 @@ function! s:GetHeadingLines()
     let l:headingLineRegex = <SID>HeadingLineRegex()
 
     while search(l:headingLineRegex, l:flags) != 0
-        let l:line = getline(".")
+        let l:line = getline(".") 
         let l:lineNum = line(".")
         let l:flags = "W"
         call add(l:headingLines, l:line)
